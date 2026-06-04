@@ -1,0 +1,45 @@
+{
+  "initialBalance": 5000.00,
+  "entries": [
+    {
+      "id": "fin_001",
+      "amount": 850.00,
+      "category": "hospedagem",
+      "description": "Hotel — 5 noites",
+      "date": "2026-07-10T00:00:00",
+      "observations": "Hotel boutique no centro histórico"
+    },
+    {
+      "id": "fin_002",
+      "amount": 280.00,
+      "category": "transporte",
+      "description": "Passagens aéreas (ida e volta)",
+      "date": "2026-07-10T00:00:00",
+      "observations": null
+    },
+    {
+      "id": "fin_003",
+      "amount": 145.00,
+      "category": "alimentacao",
+      "description": "Jantar — primeiro dia",
+      "date": "2026-07-10T00:00:00",
+      "observations": "Restaurante Le Petit — inclui drinks"
+    },
+    {
+      "id": "fin_004",
+      "amount": 220.00,
+      "category": "passeios",
+      "description": "Spa — casal",
+      "date": "2026-07-11T00:00:00",
+      "observations": "Massagem relaxante 60min cada"
+    },
+    {
+      "id": "fin_005",
+      "amount": 95.00,
+      "category": "alimentacao",
+      "description": "Almoço no mercado local",
+      "date": "2026-07-13T00:00:00",
+      "observations": null
+    }
+  ]
+}

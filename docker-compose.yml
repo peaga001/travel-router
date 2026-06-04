@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  flutter:
+    build:
+      context: .
+      dockerfile: docker/flutter/Dockerfile
+      args:
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
+    image: travel-surprise-flutter:latest
+    container_name: travel-surprise-dev
+    # host network allows direct access to ADB server running on the host (Linux only)
+    network_mode: host
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - pub-cache:/home/flutterdev/.pub-cache
+      - gradle-cache:/home/flutterdev/.gradle
+      - android-sdk-cache:/home/flutterdev/.android
+    environment:
+      - FLUTTER_ROOT=/opt/flutter
+      - ANDROID_HOME=/opt/android-sdk
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    command: /bin/bash
+
+volumes:
+  pub-cache:
+    driver: local
+  gradle-cache:
+    driver: local
+  android-sdk-cache:
+    driver: local

@@ -1,0 +1,146 @@
+[
+  {
+    "id": "evt_001",
+    "title": "Partida — A aventura começa!",
+    "dateTime": "2026-07-10T09:00:00",
+    "description": "Depois de meses de planejamento secreto, o momento finalmente chegou. O coração acelera, a mala está feita, e o sorriso não sai do rosto.",
+    "emojis": ["✈️", "❤️", "🌟"],
+    "spotifyUrl": null,
+    "photos": [],
+    "location": {
+      "name": "Aeroporto Internacional",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Voo às 10h. Check-in às 8h. Não esquecer os passaportes!",
+    "tags": ["partida", "viagem"],
+    "isCompleted": false,
+    "category": "transporte"
+  },
+  {
+    "id": "evt_002",
+    "title": "Chegada e primeiro passeio",
+    "dateTime": "2026-07-10T16:30:00",
+    "description": "Primeiro contato com a cidade. Cada rua é uma descoberta, cada esquina uma surpresa. Nos perdemos de propósito pelas vielas.",
+    "emojis": ["🌆", "📍", "😍"],
+    "spotifyUrl": null,
+    "photos": [],
+    "location": {
+      "name": "Centro Histórico",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Hotel a 10 minutos a pé do centro.",
+    "tags": ["chegada", "passeio", "cidade"],
+    "isCompleted": false,
+    "category": "passeio"
+  },
+  {
+    "id": "evt_003",
+    "title": "Jantar especial — Mesa à luz de velas",
+    "dateTime": "2026-07-10T20:00:00",
+    "description": "Uma mesa reservada, dois copos de vinho, e toda uma viagem pela frente. A primeira noite é sempre mágica.",
+    "emojis": ["🍷", "❤️", "🕯️"],
+    "spotifyUrl": "https://open.spotify.com/track/exemplo",
+    "photos": [],
+    "location": {
+      "name": "Restaurante Le Petit",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Reserva às 20h. Pedir a mesa da janela.",
+    "tags": ["jantar", "romântico", "vinho"],
+    "isCompleted": false,
+    "category": "alimentacao"
+  },
+  {
+    "id": "evt_004",
+    "title": "Manhã de spa e relaxamento",
+    "dateTime": "2026-07-11T10:00:00",
+    "description": "Uma manhã dedicada a nós dois. Massagem relaxante, banho de imersão e nenhum compromisso pelo horizonte.",
+    "emojis": ["💆", "🌸", "✨"],
+    "spotifyUrl": null,
+    "photos": [],
+    "location": {
+      "name": "Spa do Hotel",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Agendar com 24h de antecedência.",
+    "tags": ["spa", "relaxamento", "saúde"],
+    "isCompleted": false,
+    "category": "passeio"
+  },
+  {
+    "id": "evt_005",
+    "title": "Passeio de barco ao pôr do sol",
+    "dateTime": "2026-07-12T17:30:00",
+    "description": "O sol descendo devagar pelo horizonte enquanto o barco desliza nas águas. Alguns momentos não precisam de palavras.",
+    "emojis": ["🌅", "⛵", "🥂"],
+    "spotifyUrl": null,
+    "photos": [],
+    "location": {
+      "name": "Porto da Marina",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Passeio de 2 horas. Levar agasalho.",
+    "tags": ["barco", "pôr-do-sol", "romântico"],
+    "isCompleted": false,
+    "category": "passeio"
+  },
+  {
+    "id": "evt_006",
+    "title": "Mercado local e almoço típico",
+    "dateTime": "2026-07-13T12:00:00",
+    "description": "Cheiros, cores e sabores que só existem aqui. Experimentamos de tudo, compramos lembranças e saímos satisfeitos e sorridentes.",
+    "emojis": ["🛒", "🍴", "🌿"],
+    "spotifyUrl": null,
+    "photos": [],
+    "location": {
+      "name": "Mercado Municipal",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Aproveitar para comprar especiarias locais.",
+    "tags": ["mercado", "gastronomia", "cultura"],
+    "isCompleted": false,
+    "category": "alimentacao"
+  },
+  {
+    "id": "evt_007",
+    "title": "Piquenique no parque",
+    "dateTime": "2026-07-14T11:00:00",
+    "description": "Uma toalha na grama, queijo, pão, frutas, e a melhor companhia do mundo. O simples pode ser o mais perfeito.",
+    "emojis": ["🧺", "🍓", "☀️"],
+    "spotifyUrl": null,
+    "photos": [],
+    "location": {
+      "name": "Parque Central",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Levar toalha, comida e o bluetooth speaker.",
+    "tags": ["piquenique", "natureza", "romance"],
+    "isCompleted": false,
+    "category": "passeio"
+  },
+  {
+    "id": "evt_008",
+    "title": "Último jantar — Celebrando a viagem",
+    "dateTime": "2026-07-15T19:30:00",
+    "description": "A última noite é sempre agridoce. Celebramos cada momento, cada risada, cada foto mal tirada que virou memória perfeita.",
+    "emojis": ["🥂", "❤️", "🌙"],
+    "spotifyUrl": "https://open.spotify.com/track/exemplo2",
+    "photos": [],
+    "location": {
+      "name": "Restaurante Vista Mar",
+      "lat": null,
+      "lng": null
+    },
+    "observations": "Reserva especial. Mesas externas com vista.",
+    "tags": ["último-jantar", "celebração", "memórias"],
+    "isCompleted": false,
+    "category": "alimentacao"
+  }
+]
