@@ -64,8 +64,7 @@ class BackupService {
   /// Picks a JSON file and restores all data. Returns `true` on success.
   Future<bool> importAll(WidgetRef ref) async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
+      type: FileType.any,
       withData: true,
     );
     if (result == null || result.files.isEmpty) return false;
