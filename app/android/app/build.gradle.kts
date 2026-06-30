@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.travelsurprise.travel_surprise"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
