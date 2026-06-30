@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/empty_state_widget.dart';
+import '../../backup/backup_service.dart';
 import '../models/timeline_event.dart';
 import '../models/trip.dart';
 import '../providers/timeline_provider.dart';
@@ -71,7 +72,7 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
 
 // ─── Sliver Header ──────────────────────────────────────────────────────────
 
-class _TripHeader extends StatelessWidget {
+class _TripHeader extends ConsumerWidget {
   final AsyncValue<List<TimelineEvent>> eventsAsync;
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
@@ -83,7 +84,7 @@ class _TripHeader extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final tt = Theme.of(context).textTheme;
     final events = eventsAsync.valueOrNull ?? [];
     final completed = events.where((e) => e.isCompleted).length;
@@ -97,12 +98,11 @@ class _TripHeader extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       actions: [
-        if (selectedTab == 0 && events.isNotEmpty)
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf_rounded),
-            tooltip: 'Exportar PDF',
-            onPressed: () => _exportPdf(context, events),
-          ),
+        _BackupMenu(
+          canExportPdf: selectedTab == 0 && events.isNotEmpty,
+          onExportPdf: () => _exportPdf(context, events),
+          ref: ref,
+        ),
         const SizedBox(width: 4),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -224,6 +224,133 @@ class _TripHeader extends StatelessWidget {
       onLayout: (_) => pdf.save(),
       name: 'viagem_surpresa.pdf',
     );
+  }
+}
+
+// ─── Backup Menu ────────────────────────────────────────────────────────────
+
+enum _BackupAction { exportPdf, exportJson, importJson }
+
+class _BackupMenu extends StatelessWidget {
+  final bool canExportPdf;
+  final VoidCallback onExportPdf;
+  final WidgetRef ref;
+
+  const _BackupMenu({
+    required this.canExportPdf,
+    required this.onExportPdf,
+    required this.ref,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_BackupAction>(
+      icon: const Icon(Icons.more_vert_rounded),
+      tooltip: 'Mais opções',
+      onSelected: (action) => _handle(context, action),
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: _BackupAction.exportPdf,
+          enabled: canExportPdf,
+          child: const Row(
+            children: [
+              Icon(Icons.picture_as_pdf_rounded, size: 20),
+              SizedBox(width: 12),
+              Text('Exportar PDF'),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem(
+          value: _BackupAction.exportJson,
+          child: Row(
+            children: [
+              Icon(Icons.cloud_download_rounded, size: 20),
+              SizedBox(width: 12),
+              Text('Exportar dados (JSON)'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: _BackupAction.importJson,
+          child: Row(
+            children: [
+              Icon(Icons.cloud_upload_rounded, size: 20),
+              SizedBox(width: 12),
+              Text('Importar dados (JSON)'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handle(BuildContext context, _BackupAction action) async {
+    final svc = ref.read(backupServiceProvider);
+    switch (action) {
+      case _BackupAction.exportPdf:
+        onExportPdf();
+      case _BackupAction.exportJson:
+        try {
+          await svc.exportAll();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Dados exportados com sucesso!')),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erro ao exportar: $e')),
+            );
+          }
+        }
+      case _BackupAction.importJson:
+        final confirmed = await _confirmImport(context);
+        if (!confirmed) return;
+        try {
+          final ok = await svc.importAll(ref);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  ok ? 'Dados importados com sucesso!' : 'Nenhum arquivo selecionado.',
+                ),
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erro ao importar: $e')),
+            );
+          }
+        }
+    }
+  }
+
+  Future<bool> _confirmImport(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Importar dados'),
+        content: const Text(
+          'Isso substituirá todos os dados atuais do app (timeline, checklist, financeiro) pelos dados do arquivo.\n\nEssa ação não pode ser desfeita.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.secondary),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Importar'),
+          ),
+        ],
+      ),
+    );
+    return result == true;
   }
 }
 
@@ -864,7 +991,7 @@ class _AddEventSheetState extends State<_AddEventSheet> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
-    if (date == null) return;
+    if (date == null || !mounted) return;
 
     final time = await showTimePicker(
       context: context,

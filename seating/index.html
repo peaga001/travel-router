@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organização de Mesas</title>
+<style>
+  :root {
+    --bg: #FDF8F3;
+    --primary: #C8956C;
+    --secondary: #8B4E6B;
+    --gold: #D4AF6E;
+    --ink: #3a2e2a;
+    --line: #e7dccf;
+    --warn-bg: #fff3bf;
+    --warn-bd: #f0c000;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Nunito", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  header {
+    padding: 12px 20px;
+    background: var(--secondary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: .3px; }
+  header .stat { font-size: 13px; opacity: .9; }
+  header .spacer { flex: 1; }
+  header button {
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.35);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  header button:hover { background: rgba(255,255,255,.28); }
+
+  .layout { flex: 1; display: flex; min-height: 0; }
+
+  /* ── Left: guest pool ── */
+  .pool {
+    width: 320px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--line);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .pool .head { padding: 12px; border-bottom: 1px solid var(--line); }
+  .pool h2 { font-size: 14px; margin: 0 0 8px; color: var(--secondary); }
+  .pool input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+  }
+  .pool input:focus { border-color: var(--primary); }
+  .pool .list { flex: 1; overflow-y: auto; padding: 8px; }
+  .pool .list.dragover { background: #f6efe6; }
+  .pool .empty { color: #b3a596; font-size: 13px; text-align: center; padding: 24px 8px; }
+
+  .chip {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 7px 10px;
+    margin: 4px 0;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--primary);
+    border-radius: 7px;
+    cursor: grab;
+    user-select: none;
+  }
+  .chip:active { cursor: grabbing; }
+  .chip.dragging { opacity: .4; }
+  .chip .name { font-size: 13.5px; font-weight: 700; }
+  .chip .group { font-size: 11px; color: #9a8c7d; }
+
+  /* ── Right: tables ── */
+  .tables {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+    align-content: start;
+  }
+  .table {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .table.dragover { outline: 2px dashed var(--primary); outline-offset: -3px; }
+  .table.over-capacity { border-color: var(--warn-bd); }
+  .table .thead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line);
+    border-radius: 12px 12px 0 0;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .table.over-capacity .thead { background: var(--warn-bg); border-bottom-color: var(--warn-bd); }
+  .table .count { font-size: 12px; font-weight: 700; color: #9a8c7d; }
+  .table.over-capacity .count { color: #8a6d00; }
+  .table .seats { padding: 8px; flex: 1; }
+  .table .seats .empty { color: #cabba9; font-size: 12px; text-align: center; padding: 16px 4px; }
+
+  .seat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    margin: 3px 0;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    cursor: grab;
+    user-select: none;
+  }
+  .seat.dragging { opacity: .4; }
+  .seat .info { display: flex; flex-direction: column; min-width: 0; }
+  .seat .name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seat .group { font-size: 10.5px; color: #9a8c7d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seat .rm {
+    border: none; background: transparent; color: #c0392b;
+    cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 4px; flex-shrink: 0;
+  }
+  .seat .rm:hover { color: #e74c3c; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>💍 Organização de Mesas</h1>
+    <span class="stat" id="stat"></span>
+    <span class="spacer"></span>
+    <button id="resetBtn">Limpar tudo</button>
+  </header>
+
+  <div class="layout">
+    <aside class="pool">
+      <div class="head">
+        <h2>Convidados <span id="poolCount" style="color:#9a8c7d;font-weight:400"></span></h2>
+        <input id="search" type="search" placeholder="Pesquisar por nome...">
+      </div>
+      <div class="list" id="poolList" data-table="pool"></div>
+    </aside>
+
+    <main class="tables" id="tables"></main>
+  </div>
+
+<script>
+const TABLE_COUNT = 10;
+const SEATS = 10;
+const STORAGE_KEY = "seating_assignments_v1";
+
+let guests = [];              // [{id, nome, grupo, pin}]
+let assignments = {};         // id -> "pool" | "0".."9"
+let dragId = null;
+
+function loadAssignments() {
+  try { assignments = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { assignments = {}; }
+}
+function saveAssignments() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(assignments));
+}
+
+function tableOf(id) { return assignments[id] ?? "pool"; }
+
+function move(id, target) {
+  assignments[id] = target;
+  saveAssignments();
+  render();
+}
+
+// ── Rendering ──────────────────────────────────────────────
+function makeChip(g, inSeat) {
+  const el = document.createElement("div");
+  el.className = inSeat ? "seat" : "chip";
+  el.draggable = true;
+  el.dataset.id = g.id;
+  if (inSeat) {
+    el.innerHTML =
+      `<div class="info"><span class="name"></span><span class="group"></span></div>` +
+      `<button class="rm" title="Remover da mesa">✕</button>`;
+    el.querySelector(".rm").addEventListener("click", (e) => {
+      e.stopPropagation();
+      move(g.id, "pool");
+    });
+  } else {
+    el.innerHTML = `<span class="name"></span><span class="group"></span>`;
+  }
+  el.querySelector(".name").textContent = g.nome;
+  el.querySelector(".group").textContent = g.grupo;
+
+  el.addEventListener("dragstart", (e) => {
+    dragId = g.id;
+    el.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", g.id);
+  });
+  el.addEventListener("dragend", () => { dragId = null; el.classList.remove("dragging"); });
+  return el;
+}
+
+function render() {
+  const term = document.getElementById("search").value.trim().toLowerCase();
+
+  // Pool
+  const poolList = document.getElementById("poolList");
+  poolList.innerHTML = "";
+  const pool = guests
+    .filter(g => tableOf(g.id) === "pool")
+    .filter(g => !term || g.nome.toLowerCase().includes(term) || g.grupo.toLowerCase().includes(term));
+  if (pool.length === 0) {
+    poolList.innerHTML = `<div class="empty">${term ? "Ninguém encontrado." : "Todos sentados! 🎉"}</div>`;
+  } else {
+    pool.forEach(g => poolList.appendChild(makeChip(g, false)));
+  }
+
+  // Tables
+  const tablesEl = document.getElementById("tables");
+  tablesEl.innerHTML = "";
+  for (let t = 0; t < TABLE_COUNT; t++) {
+    const key = String(t);
+    const people = guests.filter(g => tableOf(g.id) === key);
+    const over = people.length > SEATS;
+
+    const table = document.createElement("div");
+    table.className = "table" + (over ? " over-capacity" : "");
+    table.dataset.table = key;
+    table.innerHTML =
+      `<div class="thead"><span>Mesa ${t + 1}</span>` +
+      `<span class="count">${people.length}/${SEATS}</span></div>` +
+      `<div class="seats"></div>`;
+    const seats = table.querySelector(".seats");
+    if (people.length === 0) {
+      seats.innerHTML = `<div class="empty">Arraste convidados aqui</div>`;
+    } else {
+      people.forEach(g => seats.appendChild(makeChip(g, true)));
+    }
+    tablesEl.appendChild(table);
+  }
+
+  // Stats
+  const seated = guests.filter(g => tableOf(g.id) !== "pool").length;
+  document.getElementById("stat").textContent = `${seated} de ${guests.length} acomodados`;
+  document.getElementById("poolCount").textContent = `(${pool.length})`;
+}
+
+// ── Drop zones (event delegation) ──────────────────────────
+function setupDropZones() {
+  function findZone(target) {
+    return target.closest("[data-table]");
+  }
+  document.addEventListener("dragover", (e) => {
+    const zone = findZone(e.target);
+    if (zone) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; zone.classList.add("dragover"); }
+  });
+  document.addEventListener("dragleave", (e) => {
+    const zone = findZone(e.target);
+    if (zone && !zone.contains(e.relatedTarget)) zone.classList.remove("dragover");
+  });
+  document.addEventListener("drop", (e) => {
+    const zone = findZone(e.target);
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.remove("dragover");
+    const id = dragId ?? e.dataTransfer.getData("text/plain");
+    if (id !== null && id !== "") move(String(id), zone.dataset.table);
+  });
+}
+
+// ── Init ───────────────────────────────────────────────────
+async function init() {
+  loadAssignments();
+  const data = await fetch("convites.json").then(r => r.json());
+  guests = data
+    .map((c, i) => ({ id: String(i), nome: c.nome_completo, grupo: c.nome_convite, pin: c.pin }))
+    .sort((a, b) => a.grupo.localeCompare(b.grupo, "pt") || a.nome.localeCompare(b.nome, "pt"));
+
+  document.getElementById("search").addEventListener("input", render);
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (confirm("Tirar todos das mesas e recomeçar?")) { assignments = {}; saveAssignments(); render(); }
+  });
+  setupDropZones();
+  render();
+}
+init();
+</script>
+</body>
+</html>

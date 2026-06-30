@@ -26,6 +26,16 @@ services:
       - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
     command: /bin/bash
 
+  # App web estático para organizar as mesas (arrastar e soltar convidados)
+  seating:
+    image: nginx:alpine
+    container_name: travel-surprise-seating
+    ports:
+      - "8080:80"
+    volumes:
+      - ./seating:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
 volumes:
   pub-cache:
     driver: local

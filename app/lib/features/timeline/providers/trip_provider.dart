@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/timeline_event.dart';
 import '../models/trip.dart';
 import '../providers/timeline_provider.dart';
 import '../repositories/timeline_repository.dart';
